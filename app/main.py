@@ -151,7 +151,8 @@ return RedirectResponse(url="/", status_code=303)
 # Read
 @app.get("/checkouts")
 def view_checkouts():
-    conn = get_db_conn()
+    conn = get_db_con
+    n()
     cursor = conn.cursor(dictionary=True)
 try:
     # Read checkout records 
@@ -169,14 +170,35 @@ except Exception as e:
 finally:
     cursor.close()
     conn.close()
-    
-    
+
+#Update
+
+@app.post("/product/update-stock")
+def update_product_stock(
+    product_id: int = Form(...),
+    new_stock: int = Form(...)
+):
+     conn = get_db_conn()
+     cursor = conn.cursor(dictionary=True)
+
+try:
+    cursor.execute("""
+        UPDATE PRODUCT
+        SET PRODUCT_STOCK = %s
+        WHERE PRODUCT_ID = %s
+    """, (new_stock, product_id))
+
+    conn.commit()
+    return {"message": "Product stock update successfully"}
+
+except Exception as e:
+    conn.rollback()
+    print("Update error:", e)
+    return {"error": str(e)}
+
+finally:
+    cursor.close()
+    conn.close()
 
 
-            
-
-    
-          
-        
-            
     
